@@ -7,29 +7,20 @@ extension AppDelegate: AppsFlyerLibDelegate {
     
     public static let appsFlyerDevKey = "BYbL7iQyGkW9x2ZSzbyhh7"
     public static let appleAppID = "6767208785"
-    public static var afDataRecieved = false
     public static var fcmToken = ""
 
-    static var subParams : String
-    {
-        get
-        {
+    static var subParams : String {
+        get {
             return UserDefaults.standard.string(forKey: "subParams") ?? ""
-        }
-        set
-        {
+        } set {
             UserDefaults.standard.set(newValue, forKey: "subParams")
         }
     }
     
-    static var afid : String
-    {
-        get
-        {
+    static var afid : String {
+        get {
             return UserDefaults.standard.string(forKey: "afid") ?? ""
-        }
-        set
-        {
+        } set {
             UserDefaults.standard.set(newValue, forKey: "afid")
         }
     }
@@ -39,18 +30,23 @@ extension AppDelegate: AppsFlyerLibDelegate {
         if let campaign = conversionInfo["campaign"] as? String {
             print("AF Campaign: \(campaign)")
             let strings = campaign.split(separator: "_")
+            
             if strings.count > 1 {
                 var result = ""
+                
                 for i in 0..<strings.count {
                     let str = "sub\(i + 1)=\(strings[i])&"
                     result += str
                 }
+                
                 result = String(result.dropLast())
                 AppDelegate.subParams = result
                 print("afid: \(AppDelegate.afid)")
-                AppDelegate.afDataRecieved = true
-                self.applyDecision()
             }
+        }
+        
+        DispatchQueue.main.async {
+            self.resolveAFContinuation()
         }
     }
     
@@ -58,8 +54,7 @@ extension AppDelegate: AppsFlyerLibDelegate {
         print(error)
     }
 
-    func initAppsFlyer()
-    {
+    func initAppsFlyer() {
         AppsFlyerLib.shared().appsFlyerDevKey = AppDelegate.appsFlyerDevKey
         AppsFlyerLib.shared().appleAppID = AppDelegate.appleAppID
         AppsFlyerLib.shared().delegate = self
@@ -67,12 +62,11 @@ extension AppDelegate: AppsFlyerLibDelegate {
         AppsFlyerLib.shared().start(completionHandler: { (dictionary, error) in
             if (error != nil){
                 print("AF error: \(error)")
-//                return
             } else {
                 print("AF inited: \(String(describing: dictionary))")
-//                return
             }
         })
+        
         AppDelegate.afid = AppsFlyerLib.shared().getAppsFlyerUID()
     }
 }

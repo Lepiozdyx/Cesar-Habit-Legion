@@ -313,8 +313,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Cesar - Habit Legion";
-				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to the camera to take photos.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to the photo library to save photos.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to the camera to take photos and videos.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to the photo library to save photos and videos.";
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Your permission helps us measure which advertising campaigns led to app installs and evaluate marketing performance.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -326,7 +326,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cesarhabit.legy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -351,8 +351,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Cesar - Habit Legion";
-				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to the camera to take photos.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to the photo library to save photos.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to the camera to take photos and videos.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to the photo library to save photos and videos.";
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Your permission helps us measure which advertising campaigns led to app installs and evaluate marketing performance.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -364,7 +364,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cesarhabit.legy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

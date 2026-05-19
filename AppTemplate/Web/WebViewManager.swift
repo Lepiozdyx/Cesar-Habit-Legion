@@ -5,73 +5,56 @@ import UIKit
 import UniformTypeIdentifiers
 
 struct WebViewManager: UIViewRepresentable {
- 
-    var webView: WKWebView
-    var url: URL
 
-    var timeStarted: Date = Date.now
-    
+    let url: URL
+
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator()
     }
-    
-    init(address: URL) {
-        url = address
+
+    func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []
-        
+
         let preferences = WKWebpagePreferences()
         preferences.allowsContentJavaScript = true
         configuration.defaultWebpagePreferences = preferences
-        
-        webView = WKWebView(frame: .zero, configuration: configuration)
-        webView.evaluateJavaScript("navigator.userAgent") { result, error in
-            if let userAgent = result as? String {
-                print(result)
-            }}
-    }
-    
-    func makeUIView(context: Context) -> WKWebView {
-        
+
+        let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
+        webView.uiDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
         webView.allowsLinkPreview = true
         webView.scrollView.showsHorizontalScrollIndicator = false
         webView.scrollView.bounces = true
         webView.scrollView.contentInsetAdjustmentBehavior = .always
         webView.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
-        webView.uiDelegate = context.coordinator
+
+        context.coordinator.webView = webView
         return webView
     }
-    
+
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        webView.load(URLRequest(url: url))
+        guard uiView.url == nil else { return }
+        uiView.load(URLRequest(url: url))
     }
     
     class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
-        var parent: WebViewManager
-        
-        init(_ parent: WebViewManager) {
-            self.parent = parent
-            super.init()
-        }
+        weak var webView: WKWebView?
 
-        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            parent.timeStarted = Date.now
-        }
+        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {}
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             guard let finalURL = webView.url else {
                 return
             }
             
-            if finalURL.absoluteString != WebManager.cesarURL && !finalURL.absoluteString.contains("google"){
+            if finalURL.absoluteString != WebManager.initialURL && !finalURL.absoluteString.contains("google"){
                 if WebManager.getSavedUrl() == ""
                 {
                     WebManager.trySetSavedUrl(finalURL)
                 }
-                //print("Loaded url: \(finalURL)")
             } else {
                 print("Failed to load: \(finalURL)")
             }
@@ -112,7 +95,7 @@ struct WebViewManager: UIViewRepresentable {
         guard let url = navigationAction.request.url else {
             return nil
         }
-        parent.webView.load(URLRequest(url: url))
+        webView.load(URLRequest(url: url))
         return nil
     }
     

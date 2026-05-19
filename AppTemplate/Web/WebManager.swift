@@ -1,97 +1,54 @@
 import Foundation
 import UIKit
 
-public class WebManager
-{
+public class WebManager {
+    
+    static let initialURL = "https://cesarhabitleg.biz/update"
     static let savedUrlKey = "savedUrl"
-    static let cesarURL = "https://cesarhabitleg.biz/update"
     static var provenUrl : URL?
     
-    static func decide(finalUrl: String) async -> String
-    {
+    static func decide(finalUrl: String) async -> String {
         print("testing URL: \(finalUrl)")
         let savedUrl = getSavedUrl()
-        if savedUrl == ""
-        {
-            do
-            {
-                
-                if try await checkInitURL(url: URL(string: finalUrl)!)
-                {
-                    await loadProvenURL(urlString: finalUrl)
+        if savedUrl == "" {
+            do {
+                if let _ = try await checkInitURL(url: URL(string: finalUrl)!) {
                     trySetSavedUrl(URL(string: finalUrl)!)
+                    provenUrl = URL(string: finalUrl)
                     return finalUrl
-                }
-                else
-                {
+                } else {
                     return ""
                 }
-            }
-            catch
-            {
+            } catch {
                 return ""
             }
-        }
-        else
-        {
-            await loadProvenURL(urlString: savedUrl)
+        } else {
+            if let url = URL(string: savedUrl) {
+                provenUrl = url
+            }
             return savedUrl
         }
     }
     
-    static func checkUrl(url: URL) async -> Bool
-    {
-        do {
-            var request = URLRequest(url: url)
-            request.setValue(getUAgent(forWebView: false), forHTTPHeaderField: "User-Agent")
-            
-            let (_, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                return false
-            }
-            
-            if (400...599).contains(httpResponse.statusCode){
-                return false
-            }
-            
-            return true
-        }
-        catch
-        {
-            return false
-        }
-    }
-    
-    static func checkInitURL(url: URL) async throws -> Bool {
-        do {
-            var request = URLRequest(url: url)
-            request.setValue(getUAgent(forWebView: false), forHTTPHeaderField: "User-Agent")
-            
-            let (_, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                return false
-            }
-            
-            guard (200...299).contains(httpResponse.statusCode) else {
-                return false
-            }
-            
-            guard let finalURL = httpResponse.url else {
-                return false
-            }
-            
-            if await !checkUrl(url: finalURL)
-            {
-                return false
-            }
-            
-            return true
+    static func checkInitURL(url: URL) async throws -> URL? {
+        var request = URLRequest(url: url)
+        request.setValue(getUAgent(forWebView: false), forHTTPHeaderField: "User-Agent")
 
-        } catch {
-            return false
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return nil
         }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            return nil
+        }
+
+        guard let finalURL = httpResponse.url else {
+            return nil
+        }
+
+        return finalURL
     }
     
     static func getSavedUrl() -> String
@@ -112,22 +69,12 @@ public class WebManager
     }
     
     static func trySetSavedUrl(_ url: URL) {
-        
         guard !isInvalidURL(url) else {
             return
         }
         
         UserDefaults.standard.set(url.absoluteString, forKey: savedUrlKey)
         provenUrl = url
-    }
-    
-    private static func loadProvenURL(urlString: String) async {
-        if let url = URL(string: urlString), try await checkUrl(url: url){
-            WebManager.provenUrl = url
-            print("URL Proven: \(urlString)")
-        } else {
-            print("Failed to load URL from string: \(urlString)")
-        }
     }
     
     private static func isInvalidURL(_ url: URL) -> Bool {
